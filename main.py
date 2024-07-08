@@ -24,6 +24,13 @@ class TelegramBot:
                 self.client = TelegramClient('user_session', API_ID, API_HASH)
                 await self.client.start()
 
+                # If it's the first time, it will ask for phone and verification code
+                if not await self.client.is_user_authorized():
+                    phone = input("Enter your phone number (with country code): ")
+                    await self.client.send_code_request(phone)
+                    code = input("Enter the code you received: ")
+                    await self.client.sign_in(phone, code)
+
             load_plugins(self.client, self.db)
 
             logger.info(f"Bot started in {self.mode} mode")
